@@ -15,6 +15,8 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
   const { user } = useUser();
   const podcast = useQuery(api.podcasts.getPodcastById, { podcastId });
   const similarPodcasts = useQuery(api.podcasts.getPodcastByVoiceType, { podcastId });
+  const clerkId = user?.id || "";
+  const currentUser = useQuery(api.users.getUserById, { clerkId });
 
   // If user is not logged in, show a message or redirect
   if (!user) {
