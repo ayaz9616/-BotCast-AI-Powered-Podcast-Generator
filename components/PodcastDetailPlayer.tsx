@@ -205,7 +205,7 @@ const PodcastDetailPlayer = ({
                         <SelectValue placeholder="Select AI Voice" />
                       </SelectTrigger>
                       <SelectContent className="bg-black-2 text-white-1">
-                        {["Drew", "Sarah", "Shiwangi", "Brian", "Grandpa"].map((category) => (
+                        {["Drew", "Sarah", "Brian", "Grandpa"].map((category) => (
                           <SelectItem key={category} value={category} className="capitalize focus:bg-orange-1">
                             {category}
                           </SelectItem>
