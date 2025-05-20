@@ -97,7 +97,7 @@ const PodcastDetailPlayer = ({
   };
 
   if (!imageUrl || !authorImageUrl) return <LoaderSpinner />;
-  console.log('isown',isOwner)
+  // console.log('isown',isOwner)
 
   return (
     <div className="mt-6 flex w-full justify-between max-md:justify-center">
@@ -205,7 +205,11 @@ const PodcastDetailPlayer = ({
                         <SelectValue placeholder="Select AI Voice" />
                       </SelectTrigger>
                       <SelectContent className="bg-black-2 text-white-1">
+<<<<<<< HEAD
                         {["Drew", "Sarah", "Brian", "Grandpa"].map((category) => (
+=======
+                        {["Drew", "Sarah", "Brian"].map((category) => (
+>>>>>>> fb9c6e2 (corrected ownership logic)
                           <SelectItem key={category} value={category} className="capitalize focus:bg-orange-1">
                             {category}
                           </SelectItem>

@@ -38,7 +38,7 @@ import { api } from "@/convex/_generated/api"
 import { useRouter } from "next/navigation"
 
 // const voiceCategories = ['alloy', 'shimmer', 'nova', 'echo', 'fable', 'onyx'];
-const voiceCategories = ['Drew', "Sarah","Brian","Grandpa"];
+const voiceCategories = ['Drew', "Sarah","Brian"];
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
@@ -104,9 +104,9 @@ const CreatePodcast = () => {
         audioDuration,
         audioStorageId: audioStorageId!,
         imageStorageId: imageStorageId!,
-        user: convexUser._id,
+        user: convexUser._id, // Pass Convex user _id as required by v.id("users")
         author: user?.fullName || "Anonymous",
-        authorId: convexUser._id, // Use Convex user _id for authorId
+        authorId: convexUser.clerkId, // Use Convex user clerkId for authorId
         authorImageUrl: user?.imageUrl || "",
       })
       // console.log('while creating',podcast);

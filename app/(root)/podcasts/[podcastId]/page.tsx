@@ -12,11 +12,14 @@ import Image from "next/image";
 import React from "react";
 
 const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'podcasts'> } }) => {
-  // Fetch podcast details
+  const { user } = useUser();
   const podcast = useQuery(api.podcasts.getPodcastById, { podcastId });
-
-  // Fetch similar podcasts
   const similarPodcasts = useQuery(api.podcasts.getPodcastByVoiceType, { podcastId });
+
+  // If user is not logged in, show a message or redirect
+  if (!user) {
+    return <EmptyState title="Please sign in to view podcasts" buttonLink="/sign-in" buttonText="Sign in" />;
+  }
 
   // Defensive: If podcast is null or undefined, show error instead of infinite loading
   if (podcast === null) {
@@ -25,8 +28,11 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
     );
   }
   if (!podcast) return <LoaderSpinner />;
-  const isOwn = podcast.user === podcast.authorId;
-  // console.log('podcast', podcast.authorId, podcast.user);
+  const isOwn = user?.id === podcast.authorId;
+  console.log('isOwn:', isOwn);
+  console.log('user.id:', user?.id);
+  console.log('podcast.authorId:', podcast.authorId);
+
   // Always render the player, fallback to empty string for missing fields
   return (
     <section className="flex w-full flex-col">
