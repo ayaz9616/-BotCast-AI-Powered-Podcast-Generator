@@ -25,7 +25,8 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
     );
   }
   if (!podcast) return <LoaderSpinner />;
-
+  const isOwn = podcast.user === podcast.authorId;
+  // console.log('podcast', podcast.authorId, podcast.user);
   // Always render the player, fallback to empty string for missing fields
   return (
     <section className="flex w-full flex-col">
@@ -38,7 +39,7 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
       </header>
 
       <PodcastDetailPlayer
-        isOwner={false} // ignore ownership for now
+        isOwner={isOwn}
         podcastId={podcast._id}
         audioUrl={podcast.audioUrl || ''}
         podcastTitle={podcast.podcastTitle || ''}

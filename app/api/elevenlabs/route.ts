@@ -25,7 +25,15 @@ export const POST = async (request: Request) => {
         // Convert chunks to a Buffer
         const audioBuffer = Buffer.concat(chunks);
 
-        return new NextResponse(audioBuffer, {
+        // Debug: log buffer size and first bytes as text
+        console.log('ElevenLabs audioBuffer size:', audioBuffer.length);
+        if (audioBuffer.length < 100) {
+            console.error('Audio buffer too small, possible error:', audioBuffer.toString('utf8'));
+            return NextResponse.json({ error: 'Audio generation failed: empty or invalid audio', details: audioBuffer.toString('utf8') }, { status: 500 });
+        }
+
+        // Convert Buffer to Uint8Array for NextResponse
+        return new NextResponse(new Uint8Array(audioBuffer), {
         headers: {
             'Content-Type': 'audio/mpeg',
             'Content-Disposition': 'attachment; filename="audio.mp3"',

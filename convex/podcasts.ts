@@ -20,8 +20,6 @@ import { mutation, query } from "./_generated/server";
 //   handler: async (ctx, args) => {
 //     const identity = await ctx.auth.getUserIdentity();
 
-//     console.log("identity", identity);
-
 //     if (!identity) {
 //       throw new ConvexError("User not authenticated");
 //     }
@@ -30,8 +28,6 @@ import { mutation, query } from "./_generated/server";
 //       .query("users")
 //       .filter((q) => q.eq(q.field("email"), identity.email))
 //       .collect();
-
-//     console.log("user", user);
 
 //     if (user.length === 0) {
 //       throw new ConvexError("User not found");

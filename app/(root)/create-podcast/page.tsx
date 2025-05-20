@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -37,7 +38,7 @@ import { api } from "@/convex/_generated/api"
 import { useRouter } from "next/navigation"
 
 // const voiceCategories = ['alloy', 'shimmer', 'nova', 'echo', 'fable', 'onyx'];
-const voiceCategories = ['Drew', "Sarah","Shiwangi","Brian","Grandpa"];
+const voiceCategories = ['Drew', "Sarah","Brian","Grandpa"];
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
@@ -47,6 +48,9 @@ const formSchema = z.object({
 const CreatePodcast = () => {
   const router = useRouter()
   const { user } = useUser();
+  // Fetch Convex user by Clerk ID
+  const convexUser = useQuery(api.users.getUserById, { clerkId: user?.id ?? "" });
+  // console.log('convexUser', convexUser?. _id);
   const [imagePrompt, setImagePrompt] = useState('');
   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(null)
   const [imageUrl, setImageUrl] = useState('');
@@ -82,7 +86,12 @@ const CreatePodcast = () => {
         setIsSubmitting(false);
         throw new Error('Please generate audio and image')
       }
-
+      if (!convexUser) {
+        toast({ title: 'User not loaded' });
+        setIsSubmitting(false);
+        return;
+      }
+      // Store authorId as Convex user _id for robust ownership checks
       const podcast = await createPodcast({
         podcastTitle: data.podcastTitle,
         podcastDescription: data.podcastDescription,
@@ -95,13 +104,12 @@ const CreatePodcast = () => {
         audioDuration,
         audioStorageId: audioStorageId!,
         imageStorageId: imageStorageId!,
-        user: user?.publicMetadata.dbId || undefined, // or user?.id if you use Clerk's id
+        user: convexUser._id,
         author: user?.fullName || "Anonymous",
-        authorId: user?.id || "",
+        authorId: convexUser._id, // Use Convex user _id for authorId
         authorImageUrl: user?.imageUrl || "",
       })
-      console.log('while creating',podcast);
-
+      // console.log('while creating',podcast);
       toast({ title: 'Podcast created' })
       setIsSubmitting(false);
       router.push('/')
