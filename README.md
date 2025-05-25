@@ -76,13 +76,14 @@ cd botcast</code></pre>
   <h3>Setup environment variables</h3>
   <p>Create a <code>.env</code> file in the root directory and add:</p>
   <pre><code>CONVEX_DEPLOYMENT=
+ELEVENLABS_API_KEY=
+HUGGINGFACE_API_KEY=
 NEXT_PUBLIC_CONVEX_URL=
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 NEXT_PUBLIC_CLERK_SIGN_IN_URL='/sign-in'
 NEXT_PUBLIC_CLERK_SIGN_UP_URL='/sign-up'</code></pre>
-ELEVENLABS_API_KEY=
-HUGGINGFACE_API_KEY=
+
   <p>Replace the placeholders with your actual Convex and Clerk credentials.</p>
 
   <h3>Run the project locally</h3>
