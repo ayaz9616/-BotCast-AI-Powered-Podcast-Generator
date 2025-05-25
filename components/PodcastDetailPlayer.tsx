@@ -35,6 +35,7 @@ const PodcastDetailPlayer = ({
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const deletePodcast = useMutation(api.podcasts.deletePodcast);
   const updatePodcast = useMutation((api as any).podcasts.updatePodcast);
   const updatePodcastViews = useMutation(api.podcasts.updatePodcastViews);
@@ -177,22 +178,71 @@ const PodcastDetailPlayer = ({
                   <form
                     onSubmit={async (e) => {
                       e.preventDefault();
-                      await updatePodcast({
-                        podcastId,
-                        podcastTitle: editTitle,
-                        podcastDescription: editDescription,
-                        voiceType: editVoiceType,
-                        voicePrompt: editVoicePrompt,
-                        imagePrompt: editImagePrompt,
-                        audioUrl: editAudioUrl,
-                        audioStorageId: editAudioStorageId,
-                        imageUrl: editImageUrl,
-                        imageStorageId: editImageStorageId,
-                        audioDuration: editAudioDuration,
-                      });
-                      setIsEditOpen(false);
-                      toast({ title: "Podcast updated!" });
-                      router.refresh?.();
+                      // Improved validation with specific error messages
+                      if (!editTitle.trim()) {
+                        toast({ title: "Title is required.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editDescription.trim()) {
+                        toast({ title: "Description is required.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editVoiceType) {
+                        toast({ title: "AI Voice selection is required.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editVoicePrompt.trim()) {
+                        toast({ title: "Voice prompt is required.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editImagePrompt.trim()) {
+                        toast({ title: "Thumbnail prompt is required.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editAudioUrl) {
+                        toast({ title: "Audio must be generated.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editAudioStorageId) {
+                        toast({ title: "Audio file is missing.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editImageUrl) {
+                        toast({ title: "Thumbnail image must be generated.", variant: "destructive" });
+                        return;
+                      }
+                      if (!editImageStorageId) {
+                        toast({ title: "Thumbnail file is missing.", variant: "destructive" });
+                        return;
+                      }
+                      if (editAudioDuration === 0 || editAudioDuration === undefined || editAudioDuration === null) {
+                        toast({ title: "Audio duration is missing or invalid.", variant: "destructive" });
+                        return;
+                      }
+                      setIsUpdating(true);
+                      try {
+                        await updatePodcast({
+                          podcastId,
+                          podcastTitle: editTitle,
+                          podcastDescription: editDescription,
+                          voiceType: editVoiceType,
+                          voicePrompt: editVoicePrompt,
+                          imagePrompt: editImagePrompt,
+                          audioUrl: editAudioUrl,
+                          audioStorageId: editAudioStorageId,
+                          imageUrl: editImageUrl,
+                          imageStorageId: editImageStorageId,
+                          audioDuration: editAudioDuration,
+                        });
+                        setIsEditOpen(false);
+                        toast({ title: "Podcast updated!" });
+                        await router.refresh?.();
+                      } catch (err) {
+                        console.error("Error updating podcast", err);
+                        toast({ title: "Error updating podcast", description: err?.message || String(err), variant: "destructive" });
+                      } finally {
+                        setIsUpdating(false);
+                      }
                     }}
                     className="flex flex-col gap-4"
                   >
@@ -244,7 +294,9 @@ const PodcastDetailPlayer = ({
                       imagePrompt={editImagePrompt}
                       setImagePrompt={setEditImagePrompt}
                     />
-                    <Button type="submit" className="bg-orange-1 text-black-1 font-bold mt-4">Save Changes</Button>
+                    <Button type="submit" className="bg-orange-1 text-black-1 font-bold mt-4" disabled={isUpdating}>
+                      {isUpdating ? "Saving..." : "Save Changes"}
+                    </Button>
                   </form>
                 </SheetContent>
               </Sheet>

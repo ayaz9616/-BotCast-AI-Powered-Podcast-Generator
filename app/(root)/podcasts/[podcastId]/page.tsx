@@ -31,9 +31,9 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
   }
   if (!podcast) return <LoaderSpinner />;
   const isOwn = user?.id === podcast.authorId;
-  console.log('isOwn:', isOwn);
-  console.log('user.id:', user?.id);
-  console.log('podcast.authorId:', podcast.authorId);
+  // console.log('isOwn:', isOwn);
+  // console.log('user.id:', user?.id);
+  // console.log('podcast.authorId:', podcast.authorId);
 
   // Always render the player, fallback to empty string for missing fields
   return (

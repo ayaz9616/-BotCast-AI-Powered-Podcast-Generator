@@ -21,15 +21,21 @@ export const POST = async (request: Request) => {
           );
 
           // Convert the response to a Blob
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('HuggingFace API error:', errorText);
+          return NextResponse.json({ error: 'Image generation failed', details: errorText }, { status: 500 });
+        }
         const blob = await response.blob();
+        if (!blob || blob.size < 1000) {
+          console.error('Image blob too small or empty');
+          return NextResponse.json({ error: 'Image generation failed: empty or invalid image' }, { status: 500 });
+        }
         const buffer = await blob.arrayBuffer();
-
-        // Respond with the image as a buffer
         const imageName = `thumbnail.png`;
         const imageBuffer = Buffer.from(buffer);
-
-        // Return the image as part of the response
-        return new Response(imageBuffer, {
+        // Return the image as part of the response (convert Buffer to Uint8Array for Next.js Response)
+        return new Response(new Uint8Array(imageBuffer), {
           headers: {
             'Content-Type': 'image/png',
             'Content-Disposition': `attachment; filename="${imageName}"`,

@@ -302,3 +302,37 @@ export const deletePodcast = mutation({
     return await ctx.db.delete(args.podcastId);
   },
 });
+
+export const updatePodcast = mutation({
+  args: {
+    podcastId: v.id("podcasts"),
+    podcastTitle: v.string(),
+    podcastDescription: v.string(),
+    voiceType: v.string(),
+    voicePrompt: v.string(),
+    imagePrompt: v.string(),
+    audioUrl: v.string(),
+    audioStorageId: v.id("_storage"),
+    imageUrl: v.string(),
+    imageStorageId: v.id("_storage"),
+    audioDuration: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const podcast = await ctx.db.get(args.podcastId);
+    if (!podcast) {
+      throw new ConvexError("Podcast not found");
+    }
+    return await ctx.db.patch(args.podcastId, {
+      podcastTitle: args.podcastTitle,
+      podcastDescription: args.podcastDescription,
+      voiceType: args.voiceType,
+      voicePrompt: args.voicePrompt,
+      imagePrompt: args.imagePrompt,
+      audioUrl: args.audioUrl,
+      audioStorageId: args.audioStorageId,
+      imageUrl: args.imageUrl,
+      imageStorageId: args.imageStorageId,
+      audioDuration: args.audioDuration,
+    });
+  },
+});

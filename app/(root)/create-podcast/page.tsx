@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useUser } from "@clerk/nextjs";
-import { useQuery } from "convex/react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -48,9 +47,6 @@ const formSchema = z.object({
 const CreatePodcast = () => {
   const router = useRouter()
   const { user } = useUser();
-  // Fetch Convex user by Clerk ID
-  const convexUser = useQuery(api.users.getUserById, { clerkId: user?.id ?? "" });
-  // console.log('convexUser', convexUser?. _id);
   const [imagePrompt, setImagePrompt] = useState('');
   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(null)
   const [imageUrl, setImageUrl] = useState('');
@@ -86,12 +82,7 @@ const CreatePodcast = () => {
         setIsSubmitting(false);
         throw new Error('Please generate audio and image')
       }
-      if (!convexUser) {
-        toast({ title: 'User not loaded' });
-        setIsSubmitting(false);
-        return;
-      }
-      // Store authorId as Convex user _id for robust ownership checks
+      const convexUser = useQuery(api.users.getUserById({ clerkId: user.id }));
       const podcast = await createPodcast({
         podcastTitle: data.podcastTitle,
         podcastDescription: data.podcastDescription,
@@ -104,12 +95,13 @@ const CreatePodcast = () => {
         audioDuration,
         audioStorageId: audioStorageId!,
         imageStorageId: imageStorageId!,
-        user: convexUser._id, // Pass Convex user _id as required by v.id("users")
+        user: convexUser._id,
         author: user?.fullName || "Anonymous",
-        authorId: convexUser.clerkId, // Use Convex user clerkId for authorId
+        authorId: user?.id || "",
         authorImageUrl: user?.imageUrl || "",
       })
-      // console.log('while creating',podcast);
+      console.log('while creating',podcast);
+
       toast({ title: 'Podcast created' })
       setIsSubmitting(false);
       router.push('/')
