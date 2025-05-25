@@ -4,39 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BotCast - AI-Powered Podcast Platform</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      margin: 20px;
-      max-width: 900px;
-      color: #222;
-    }
-    h1, h2, h3 {
-      color: #0d6efd;
-    }
-    pre {
-      background: #f4f4f4;
-      padding: 10px;
-      border-radius: 4px;
-      overflow-x: auto;
-    }
-    code {
-      font-family: Consolas, monospace;
-      background: #f4f4f4;
-      padding: 2px 4px;
-      border-radius: 3px;
-    }
-    hr {
-      border: none;
-      border-top: 1px solid #ddd;
-      margin: 30px 0;
-    }
-    ul {
-      list-style-type: disc;
-      margin-left: 20px;
-    }
-  </style>
+  
 </head>
 <body>
   <h1>BotCast - AI-Powered Podcast Platform</h1>
