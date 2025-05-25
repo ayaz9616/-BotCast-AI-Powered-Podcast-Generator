@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -47,6 +48,9 @@ const formSchema = z.object({
 const CreatePodcast = () => {
   const router = useRouter()
   const { user } = useUser();
+  const clerkId = user?.id || "";
+  const convexUser = useQuery(api.users.getUserById, { clerkId });
+
   const [imagePrompt, setImagePrompt] = useState('');
   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(null)
   const [imageUrl, setImageUrl] = useState('');
@@ -75,14 +79,19 @@ const CreatePodcast = () => {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
-      if(!audioUrl || !imageUrl || !voiceType) {
+      if (!audioUrl || !imageUrl || !voiceType || !audioStorageId || !imageStorageId || !voicePrompt.trim() || !imagePrompt.trim() || audioDuration === 0) {
         toast({
-          title: 'Please generate audio and image',
-        })
+          title: 'Please generate audio, image, and fill all required fields.',
+          variant: 'destructive',
+        });
         setIsSubmitting(false);
-        throw new Error('Please generate audio and image')
+        return;
       }
-      const convexUser = useQuery(api.users.getUserById({ clerkId: user.id }));
+      if (!convexUser) {
+        toast({ title: 'User not loaded. Please try again.', variant: 'destructive' });
+        setIsSubmitting(false);
+        return;
+      }
       const podcast = await createPodcast({
         podcastTitle: data.podcastTitle,
         podcastDescription: data.podcastDescription,
@@ -95,22 +104,21 @@ const CreatePodcast = () => {
         audioDuration,
         audioStorageId: audioStorageId!,
         imageStorageId: imageStorageId!,
-        user: convexUser._id,
+        user: convexUser?._id,
         author: user?.fullName || "Anonymous",
         authorId: user?.id || "",
         authorImageUrl: user?.imageUrl || "",
-      })
-      console.log('while creating',podcast);
-
-      toast({ title: 'Podcast created' })
+      });
+      console.log('while creating', podcast);
+      toast({ title: 'Podcast created' });
       setIsSubmitting(false);
-      router.push('/')
+      router.push('/');
     } catch (error) {
       console.log(error);
       toast({
         title: 'Error',
         variant: 'destructive',
-      })
+      });
       setIsSubmitting(false);
     }
   }
