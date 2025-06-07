@@ -24,6 +24,10 @@ const nextConfig = {
       {
         protocol:'https',
         hostname: 'cautious-sparrow-147.convex.cloud'
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com'
       }
     ]
   }

@@ -11,6 +11,17 @@ export const getUserById = query({
       .unique();
 
     if (!user) {
+      // Instead of throwing, return a guest user object if the clerkId matches the guest id
+      if (args.clerkId === "user_guest_2xFxV2oZ5jhQEh7w9ILwdvrdtjw") {
+        return {
+          _id: "jd70je872hkjg7cyvbca4eb1717hc4we",
+          clerkId: "user_guest_2xFxV2oZ5jhQEh7w9ILwdvrdtjw",
+          email: "guest@gmail.com",
+          imageUrl:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTo044HQ3ZvL1THuxgzcQxqqmY1NibmrtfdUdW1wGqL8gRaig5arc-2z1Jw33stErEbofk",
+          name: "Guest",
+        };
+      }
       throw new ConvexError("User not found");
     }
 

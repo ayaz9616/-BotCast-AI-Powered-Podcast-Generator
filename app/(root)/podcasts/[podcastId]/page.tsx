@@ -16,12 +16,12 @@ const PodcastDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'po
   const podcast = useQuery(api.podcasts.getPodcastById, { podcastId });
   const similarPodcasts = useQuery(api.podcasts.getPodcastByVoiceType, { podcastId });
   const clerkId = user?.id || "";
-  const currentUser = useQuery(api.users.getUserById, { clerkId });
+ // const currentUser = useQuery(api.users.getUserById, { clerkId });
 
-  // If user is not logged in, show a message or redirect
-  if (!user) {
-    return <EmptyState title="Please sign in to view podcasts" buttonLink="/sign-in" buttonText="Sign in" />;
-  }
+  // Remove forced sign-in for podcast viewing
+  // if (!user) {
+  //   return <EmptyState title="Please sign in to view podcasts" buttonLink="/sign-in" buttonText="Sign in" />;
+  // }
 
   // Defensive: If podcast is null or undefined, show error instead of infinite loading
   if (podcast === null) {
