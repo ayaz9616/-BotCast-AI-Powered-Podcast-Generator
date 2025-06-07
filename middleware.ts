@@ -9,7 +9,14 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware((auth, req) => {
-  if (!isPublicRoute(req)) auth().protect();
+  const url = req.nextUrl.pathname;
+  if (!isPublicRoute(req)) {
+    // Log which routes are protected and which are public
+    console.log(`[PROTECTED] ${url} - redirecting to sign-in`);
+    auth().protect();
+  } else {
+    console.log(`[PUBLIC] ${url} - accessible without login`);
+  }
 });
 
 export const config = {
