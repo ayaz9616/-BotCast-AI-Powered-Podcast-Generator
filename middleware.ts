@@ -1,13 +1,12 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-// Add podcasts and profile routes as public for guest access
+// Only allow homepage, podcast playback, and auth pages as public
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/',
-  '/podcasts(.*)',
-  '/profile(.*)'
-])
+  '/podcasts(.*)'
+]);
 
 export default clerkMiddleware((auth, req) => {
   if (!isPublicRoute(req)) auth().protect();
