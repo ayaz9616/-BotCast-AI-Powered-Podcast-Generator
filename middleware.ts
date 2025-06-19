@@ -7,7 +7,6 @@ const isPublicRoute = createRouteMatcher([
   '/',
   '/podcasts(.*)',
   '/discover(.*)',
-  // '/create-podcast(.*)' - removed to require authentication
 ]);
 
 export default clerkMiddleware((auth, req) => {
