@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import GeneratePodcast from "@/components/GeneratePodcast"
 import GenerateThumbnail from "@/components/GenerateThumbnail"
@@ -47,9 +47,35 @@ const formSchema = z.object({
 
 const CreatePodcast = () => {
   const router = useRouter()
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+  const { toast } = useToast();
+  // Form setup;
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  
+  // Redirect if user is not authenticated
+  useEffect(() => {
+    if (isLoaded) {
+      setIsAuthChecking(false);
+      if (!user) {
+        // Show toast notification and redirect
+        toast({
+          title: 'Authentication required',
+          description: 'You need to sign in to create a podcast',
+          variant: 'destructive',
+        });
+        router.push('/sign-in');
+      }
+    }
+  }, [isLoaded, user, router, toast]);
+  
+  // Only query user data if user exists
   const clerkId = user?.id || "";
-  const convexUser = useQuery(api.users.getUserById, { clerkId });
+  const convexUser = useQuery(api.users.getUserById, { 
+    clerkId 
+  }, {
+    // Only enable the query when user is authenticated
+    enabled: !!user
+  });
 
   const [imagePrompt, setImagePrompt] = useState('');
   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(null)
@@ -65,8 +91,7 @@ const CreatePodcast = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createPodcast = useMutation(api.podcasts.createPodcast)
-
-  const { toast } = useToast()
+  
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,7 +104,19 @@ const CreatePodcast = () => {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
-      if (!audioUrl || !imageUrl || !voiceType || !audioStorageId || !imageStorageId || !voicePrompt.trim() || !imagePrompt.trim() || audioDuration === 0) {
+      console.log('audioUrl', audioUrl);
+      console.log('imageUrl', imageUrl);
+      console.log('voiceType', voiceType);
+      console.log('audioStorageId', audioStorageId);
+      console.log('imageStorageId', imageStorageId);
+      console.log('voicePrompt', voicePrompt);
+      console.log('imagePrompt', imagePrompt);
+      console.log('audioDuration', audioDuration);
+      console.log('convexUser', convexUser);
+      console.log('user', user);
+      console.log('data', data);
+      
+      if (!audioUrl || !imageUrl || !voiceType || !audioStorageId || !imageStorageId || audioDuration === 0) {
         toast({
           title: 'Please generate audio, image, and fill all required fields.',
           variant: 'destructive',
@@ -123,10 +160,20 @@ const CreatePodcast = () => {
     }
   }
 
+  // Show loading state while checking authentication
+  if (isAuthChecking) {
+    return (
+      <div className="mt-10 flex flex-col items-center justify-center">
+        <Loader size={40} className="animate-spin text-orange-1" />
+        <p className="mt-4 text-white-1">Checking authentication...</p>
+      </div>
+    );
+  }
+
   return (
     <section className="mt-10 flex flex-col">
       <h1 className="text-20 font-bold text-white-1">Create Podcast</h1>
-      <h3>You can use any language</h3>
+      
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="mt-12 flex w-full flex-col">

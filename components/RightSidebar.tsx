@@ -20,7 +20,7 @@ const RightSidebar = () => {
   const { audio } = useAudio();
 
   return (
-    <section className={cn('right_sidebar h-[calc(100vh-5px)]', {
+    <section className={cn('right_sidebar h-[calc(100vh-5px)] overflow-y-scroll scrollbar-hide', {
       'h-[calc(100vh-140px)]': audio?.audioUrl
     })}>
       {user && (
@@ -40,11 +40,11 @@ const RightSidebar = () => {
         </SignedIn>
       )}
       <div>
-        <Header headerTitle="Fans Like You" />
+        <Header headerTitle="Top Podcasts" viewAllLink="/discover" />
         {topPodcasters ? <Carousel fansLikeDetail={topPodcasters}/> : <LoaderSpinner />}
       </div>
-      <div className="flex flex-col gap-8 pt-12">
-        <Header headerTitle="Top Podcastrs" />
+      <div className="flex flex-col gap-8 pt-4">
+        <Header headerTitle="Top Podcastrs" viewAllLink="/users" />
         <div className="flex flex-col gap-6">
           {topPodcasters?.slice(0, 3).map((podcaster) => (
             <div key={podcaster._id} className="flex cursor-pointer justify-between" onClick={() => router.push(`/profile/${podcaster.clerkId}`)}>
